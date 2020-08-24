@@ -5,6 +5,7 @@ AWS.config.update({ region: '/* TODO: Add your region */' })
 
 const ec2 = new AWS.EC2()
 // TODO: Create an rds object
+const rds = new AWS.RDS()
 const dbName = 'user'
 
 createSecurityGroup(dbName)
@@ -13,9 +14,23 @@ createSecurityGroup(dbName)
 
 function createDatabase (dbName, sgId) {
   // TODO: Create the params object
+  const params = {
+    AllocatedStorage: 5,
+    DBInstanceClass: 'db.t2.micro',
+    DBInstanceIdentifier: dbName,
+    Engine: 'mysql',
+    DBName: dbName,
+    VpcSecurityGroupIds: [ sgId ],
+    MasterUsername: 'admin',
+    MasterUserPassword: 'mypassword'
+  }
 
   return new Promise((resolve, reject) => {
     // TODO: Create the db instance
+    rds.createDBInstance(params, (err, data) => {
+      if (err) reject(err)
+      else resolve(data)
+    })
   })
 }
 
